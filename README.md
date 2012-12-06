@@ -68,14 +68,20 @@ Binary buffers if needed.
 
 Maybe regular expressions and Errors, too (but not likely as useful).
 
+For browser use, provide a parser for a strict subset of ASON for over-the-wire
+data.
+
 ## API
 
 	cson = require 'cson'
 
 	# Like JSON
 
-	cson.parse string
 	cson.stringify value, replacer, space
+	cson.parse string
 
+	# But since pretty-printing JSON is tedious, have shorthands:
 
+	cson.to = (value, space) -> cson.stringify value, null, space
+	cson.from = (string) -> cson.parse 
 
