@@ -83,5 +83,5 @@ data.
 	# But since pretty-printing JSON is tedious, have shorthands:
 
 	cson.to = (value, space) -> cson.stringify value, null, space
-	cson.from = (string) -> cson.parse 
+	cson.from = (string) -> cson.parse string
 
