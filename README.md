@@ -11,14 +11,14 @@ kinds of objects, comments, and other things that JSON is lacking.
 	ason.parse 'foo: 1, bar: 2' => { foo: 1, bar: 2 }
 	ason.parse '"a string"' => "a string"
 
-Basically the guidelines are here: http://pmuellr.blogspot.fi/2008/08/better-than-json.html
+Basically follow the guidelines here:
+http://pmuellr.blogspot.fi/2008/08/better-than-json.html
 
 ## A sketch
 
 Main differences from JSON:
 
-- naked keywords are allowed, and commas not necessary, much like CoffeeScript
-  does it:
+Naked keywords are allowed, and commas not necessary, much like in CoffeeScript:
 
 	{
 		name:
@@ -31,8 +31,8 @@ Main differences from JSON:
 		]
 	}
 
-
-- any object is valid for ASONification:
+Any object is valid for ASONification, so you don't need to worry whether you
+can return a string from a remote method that is serialized:
 
 	["foo", "bar", { zot: 'wux' }]
 
@@ -40,14 +40,11 @@ Main differences from JSON:
 
 	"foo"
 
-so you don't need to worry whether you can return a string from a remote method
-that is serialized (for instance).
+Single quotes, too:
 
-- single quotes, too:
+	metaGreeting: '"Hello world", he said.\n'
 
-	foo: 'wux'
-
-- comments:
+Comments:
 
 	options:
 		// whether to enable debug features
@@ -55,7 +52,7 @@ that is serialized (for instance).
 		logLevel: /* 2 */ 4 
 
 
-- dates, possibly in form of
+Dates, possibly looking like
 
 	new Date(1354798123123)
 
@@ -63,21 +60,21 @@ or
 
 	new Date('2012-12-06T09:15:50.644Z')
 
-Possibly make writing ASON documents easier by abbreviating it with:
+Maybe make writing ASON documents easier by abbreviating it with:
 
 	D(1354798123123)
 
-- binary buffers if needed
+Binary buffers if needed.
 
-- maybe regular expressions and Errors, too (but not likely as useful)
+Maybe regular expressions and Errors, too (but not likely as useful).
 
 ## API
 
 	cson = require 'cson'
 
-	# Like 
-	cson.parse string
+	# Like JSON
 
+	cson.parse string
 	cson.stringify value, replacer, space
 
 
