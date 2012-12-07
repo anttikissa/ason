@@ -47,8 +47,9 @@ Single quotes, too:
 Comments:
 
 	options:
-		// whether to enable debug features
+		# whether to enable debug features
 		debug: true
+		# maybe enable inline comments as well:
 		logLevel: /* 2 */ 4 
 
 
