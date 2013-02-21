@@ -1,0 +1,23 @@
+{
+  "name": "ason",
+  "version": "0.0.1",
+  "description": "Antti's Object Notation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "./test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/anttisykari/ason.git"
+  },
+  "keywords": [
+    "ason",
+    "object",
+    "notation",
+    "json",
+    "javascript",
+    "serialization"
+  ],
+  "author": "Antti Sykäri",
+  "license": "BSD"
+}
