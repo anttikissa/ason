@@ -74,15 +74,15 @@ data.
 
 ## API
 
-	cson = require 'cson'
+	ason = require 'ason'
 
 	# Like JSON
 
-	cson.stringify value, replacer, space
-	cson.parse string
+	ason.stringify value, replacer, space
+	ason.parse string
 
 	# But since pretty-printing JSON is tedious, have shorthands:
 
-	cson.to = (value, space) -> cson.stringify value, null, space
-	cson.from = (string) -> cson.parse string
+	ason.to = (value, space) -> ason.stringify value, null, space
+	ason.from = (string) -> ason.parse string
 
