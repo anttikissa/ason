@@ -2,7 +2,7 @@
   "name": "ason",
   "version": "0.0.1",
   "description": "Antti's Object Notation.",
-  "main": "index.js",
+  "main": "ason.js",
   "scripts": {
     "test": "./test"
   },
@@ -19,5 +19,8 @@
     "serialization"
   ],
   "author": "Antti Sykäri",
-  "license": "BSD"
+  "license": "BSD",
+  "devDependencies": {
+    "basic-assert": "~0.5.0"
+  }
 }

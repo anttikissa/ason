@@ -1,4 +1,28 @@
-#!/bin/sh
+#!/usr/bin/env node
+// vim:set ft=javascript:
 
-true
+var assert = require('basic-assert');
+var ason = require('./ason');
+
+// Parsing
+
+assert.eq(ason.parse(''), {});
+//assert.eq(ason.parse([]), []);
+
+// A sketch for what's coming
+assert.eq(ason.parse('"string\n"'), "string\n");
+assert.eq(ason.parse('123'), 123);
+assert.eq(ason.parse('{ x: 1 }'), { x: 1 });
+
+assert.eq(ason.parse('1, 2, 3'), [1, 2, 3]);
+assert.eq(ason.parse('1, 2, foo: "bar"'), [1, 2, { foo: 'bar' }]);
+assert.eq(ason.parse('1, 2, foo: "bar"', 'last'), [1, 2, { foo: 'bar' }, 'last']);
+assert.eq(ason.parse('foo: "bar"'), { foo: 'bar' });
+
+// Probably should be an error
+assert.eq(ason.parse('1, person: name: "Name", age: 123, "then-what?"'), '???');
+
+// Stringifying
+
+assert.eq(ason.stringify({}), "");
 
