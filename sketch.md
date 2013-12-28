@@ -142,7 +142,7 @@ So the basic rules are:
 
 - when nesting arrays within objects, you need to use the explicit form.
 - when nesting objects within arrays, you need to use the explicit form if
-  - IF 
+  TODO ...
 
 
 
@@ -167,4 +167,15 @@ Test with all example things.
 
 ## Binary blobs?
 
+## Comments
 
+{
+	// standard end-of-line comments
+	// debug: true
+},
+
+/* plus multi-line comments 
+ * like this */
+{
+	// ...
+}

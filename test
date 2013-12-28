@@ -6,8 +6,7 @@ var ason = require('./ason');
 
 // Parsing
 
-assert.eq(ason.parse(''), {});
-//assert.eq(ason.parse([]), []);
+assert.throws(function() { ason.parse('') });
 
 // A sketch for what's coming
 assert.eq(ason.parse('"string\n"'), "string\n");
