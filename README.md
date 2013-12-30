@@ -1,7 +1,111 @@
-# ason
+# ASON 
 
-(This might be called CSON if it weren't already taken:
-https://github.com/bevry/cson)
+two-line general description
+...
+
+## Why ASON?
+
+1. Designed for human consumption.
+
+ASON is designed to be read and written by humans.  
+
+You can use comments:
+
+	// Fill in details here
+	{
+		/* blah blah */
+		name: 'Bob'
+	}
+
+ASON treats trailing commas like JavaScript does:
+
+	[
+		1,
+		2,
+		3, // perfectly ok
+	]
+
+Both single and double quotes are ok:
+
+	{
+		greeting: "How's it going?",
+		delimiter: '"'
+	}
+
+Keys don't have to be quoted unless it is really necessary:
+
+	ssh-hosts: {
+		ns1.example.com: { user: 'bob', pass: '...', port: 22 }
+	}
+
+	pollFiles: {
+		.gitignore: 100,
+		tmp/*: 1000
+	}
+
+	deps: {
+		$: 'lib/jquery',
+		_: 'lib/underscore'
+	}
+
+	operatorPrecedences: {
+		*: 10,
+		/: 10,
+		+: 9,
+		-: 9,
+		/* ... */
+	}
+
+	'minimum password length': 8
+
+You can leave out `{}` and `[]` if the result is unambiguous:
+
+	// equivalent to [1, 2, 'three']
+	1, 2, 'three' 
+
+	// equivalent to { firstName: 'Bob', lastName: 'Smith' }
+	firstName: 'Bob', lastName: 'Smith'
+
+	// equivalent to ['foo', { name: 'bob' }, 100]
+	'foo', name: 'Bob', 100
+
+	// equivalent to [1, 2, { x: 1, y: 2 }]
+	1, 2, x: 1, y: 2
+
+	// ERROR: ambiguous, since you could have meant either
+	// { name: { first: 'Bob' } last: 'Smith' }, or 
+	// { name: { first: 'Bob', last: 'Smith' } }
+	name: first: 'Bob', last: 'Smith'
+
+
+2. More complete support for JavaScript types
+
+In addition to everything that JSON supports, you can serialize the values
+Infinity, -Infinity, NaN, and undefined.  Date types are also supported using
+two different formats:
+
+	Date('2013-12-26 11:52:11.494'), // for humans
+	Date(1388058731494) // for machines
+
+TODO figure out if any user-defined types, plus RegExp, Error, Function etc. can
+be supported
+
+3. Backwards compatible
+
+All JSON documents are also valid ASON documents.
+
+ASON provides a JSON-compatible API.  Just replace `JSON.{parse,stringify}` with
+`ason.{parse,stringify}` and you're good to go.
+
+TODO the recommended way to call `ason.stringify` is:
+
+	ason.stringify(object, { type: 'compact' })
+	
+Note that unlike JSON, ASON is not a subset of JavaScript.
+
+3. 
+
+TODO revise from here onwards
 
 ## Goal
 

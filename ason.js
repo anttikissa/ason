@@ -119,6 +119,13 @@ function parse(s) {
 		if (tok.type === 'number') {
 			result = tok.value;
 		}
+		
+		// TODO peek and stuff to figure out what's coming
+		// parseAny() is this
+		// '[' -> parseList() 
+		// '{' -> parseObject()
+		// id ':' parseSomething() and then what?
+		// maintain a stack of parsed things.
 	}
 
 	if (typeof result === 'undefined') {
