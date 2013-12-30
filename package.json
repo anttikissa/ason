@@ -1,6 +1,6 @@
 {
   "name": "ason",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Antti's Object Notation.",
   "main": "ason.js",
   "scripts": {
@@ -21,9 +21,8 @@
   "author": "Antti Sykäri",
   "license": "BSD",
   "devDependencies": {
-    "basic-assert": "~0.5.1"
-  },
-  "dependencies": {
-    "basic-log": "~0.1.2",
+    "basic-assert": "~0.5.1",
+    "basic-log": "~0.1.2"
   }
 }
+

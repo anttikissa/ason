@@ -48,6 +48,7 @@ function tokenize(s) {
 		// looks like a string?
 		if (c === '"' || c === "'") {
 			tokens.push(readString(c));
+			continue;
 		}
 
 		// looks like a number?
@@ -61,7 +62,6 @@ function tokenize(s) {
 			while (c && c.match(/[-+.0-9eE]/)) {
 				chars += c;
 				c = char();
-				log("chars is", chars);
 			}
 
 			putBack();
@@ -71,21 +71,35 @@ function tokenize(s) {
 				error('invalid number "' + chars + '"');
 			}
 
-			log("pushing number", number);
+//			log("pushing number", number);
 			tokens.push({ type: 'number', value: number });
 			
 			continue;
 		}
 
 		// looks like an identifier?
+		if (c.match(/[a-zA-Z_]/)) {
+			var chars = '';
+			while (c && c.match(/[a-zA-Z_0-9-$]/)) {
+				chars += c;
+				c = char();
+			}
+
+			putBack();
+
+//			log("pushing id", chars);
+			tokens.push({ type: 'id', value: chars });
+			continue;
+		}
 
 		// looks like a delimiter?
 		if (c.match(/[:{}\[\]]/)) {
 			tokens.push({ type: 'delim', delim: c });
+			continue;
 		}
 
 		// looks like a comment?
-
+		error("syntax error");
 	}
 
 	return tokens;

@@ -8,6 +8,7 @@ var ason = require('./ason');
 
 function tokNum(value) { return { type: 'number', value: value }; }
 function tokStr(value) { return { type: 'string', value: value }; }
+function tokId(value) { return { type: 'id', value: value }; }
 function tokDel(value) { return { type: 'delim', delim: value }; }
 
 assert.eq(ason.tokenize('123'), [{ type: 'number', value: 123 }]);
@@ -15,6 +16,7 @@ assert.eq(ason.tokenize('"foo"'), [tokStr('foo')]);
 assert.eq(ason.tokenize('123"foo"'), [tokNum(123), tokStr('foo')]);
 assert.eq(ason.tokenize('123"foo"123'), [tokNum(123), tokStr('foo'), tokNum(123)]);
 assert.eq(ason.tokenize('1.23e123'), [tokNum(1.23e123)]);
+assert.eq(ason.tokenize('_hello-WORLD-123$$'), [tokId('_hello-WORLD-123$$')]);
 
 // TODO make number parsing stricter
 // assert.throws(function() { return ason.tokenize('1.2+-3e12eE3'); });
@@ -34,7 +36,7 @@ assert.throws(function() { ason.parse('') });
 // A sketch for what's coming
 assert.eq(ason.parse('"string\n"'), "string\n");
 assert.eq(ason.parse('123'), 123);
-assert.eq(ason.parse('{ x: 1 }'), { x: 1 });
+assert.eq(ason.parse('{ xxx: 1 }'), { x: 1 });
 
 assert.eq(ason.parse('1, 2, 3'), [1, 2, 3]);
 assert.eq(ason.parse('1, 2, foo: "bar"'), [1, 2, { foo: 'bar' }]);
