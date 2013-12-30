@@ -52,10 +52,13 @@ function tokenize(s) {
 
 		// looks like a number?
 		// TODO this is pretty sloppy, make it better
+		// matches anything that starts with -, ., or a number
+		// and goes in any combination of +, -, ., number, e, and E
+		// i.e. 1.23e+123 is valid, like it should, but so is
+		// -1.e+3E-+-+-0
 		if (c.match(/[-.0-9]/)) {
 			var chars = '';
-			// TODO continue from here...
-			while (c && c.match(/[-.0-9e]/)) {
+			while (c && c.match(/[-+.0-9eE]/)) {
 				chars += c;
 				c = char();
 				log("chars is", chars);
@@ -75,8 +78,13 @@ function tokenize(s) {
 		}
 
 		// looks like an identifier?
-		
+
 		// looks like a delimiter?
+		if (c.match(/[:{}\[\]]/)) {
+			tokens.push({ type: 'delim', delim: c });
+		}
+
+		// looks like a comment?
 
 	}
 
@@ -102,31 +110,42 @@ function parse(s) {
 
 	var result = undefined;
 
-	while (true) {
-		var tok = token();
-		var next = peek();
-
-		log("got token", tok, "next", next);
-
-		if (!tok) {
-			break;
-		}
-
-		if (tok.type === 'string') {
-			result = tok.value;
-		}
-
-		if (tok.type === 'number') {
-			result = tok.value;
-		}
-		
-		// TODO peek and stuff to figure out what's coming
-		// parseAny() is this
-		// '[' -> parseList() 
-		// '{' -> parseObject()
-		// id ':' parseSomething() and then what?
-		// maintain a stack of parsed things.
+	function parseExplicit() {
 	}
+
+	function parseAny() {
+		var result = undefined;
+
+		while (true) {
+			var tok = token();
+			var next = peek();
+
+			log("got token", tok, "next", next);
+
+			if (!tok) {
+				return result;
+			}
+
+			if (tok.type === 'string') {
+				result = tok.value;
+				// TODO what next? ':' or ','?
+			}
+
+			if (tok.type === 'number') {
+				result = tok.value;
+				// TODO what next? ','?
+			}
+			
+			// TODO peek and stuff to figure out what's coming
+			// parseAny() is this
+			// '[' -> parseList() 
+			// '{' -> parseObject()
+			// id ':' parseSomething() and then what?
+			// maintain a stack of parsed things.
+		}
+	}
+
+	result = parseAny();
 
 	if (typeof result === 'undefined') {
 		error('unexpected input');
@@ -141,5 +160,7 @@ function stringify(o) {
 
 module.exports = {
 	parse: parse,
-	stringify: stringify
+	stringify: stringify,
+	tokenize: tokenize
 }
+

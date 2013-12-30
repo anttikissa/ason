@@ -4,6 +4,29 @@
 var assert = require('basic-assert');
 var ason = require('./ason');
 
+// Tokenizing
+
+function tokNum(value) { return { type: 'number', value: value }; }
+function tokStr(value) { return { type: 'string', value: value }; }
+function tokDel(value) { return { type: 'delim', delim: value }; }
+
+assert.eq(ason.tokenize('123'), [{ type: 'number', value: 123 }]);
+assert.eq(ason.tokenize('"foo"'), [tokStr('foo')]);
+assert.eq(ason.tokenize('123"foo"'), [tokNum(123), tokStr('foo')]);
+assert.eq(ason.tokenize('123"foo"123'), [tokNum(123), tokStr('foo'), tokNum(123)]);
+assert.eq(ason.tokenize('1.23e123'), [tokNum(1.23e123)]);
+
+// TODO make number parsing stricter
+// assert.throws(function() { return ason.tokenize('1.2+-3e12eE3'); });
+
+[':', '{', '}', '[', ']'].forEach(function(delim) {
+	assert.eq(ason.tokenize(delim), [tokDel(delim)]);
+});
+
+assert.eq(
+	ason.tokenize('\n "a" \n\t : 123\n\t'),
+	[tokStr('a'), tokDel(':'), tokNum(123)]);
+
 // Parsing
 
 assert.throws(function() { ason.parse('') });
