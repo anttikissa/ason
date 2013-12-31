@@ -4,6 +4,10 @@
 var assert = require('basic-assert');
 var ason = require('./ason');
 
+function test(what) {
+	console.log("Testing", what);
+}
+
 // Tokenizing
 
 function tokNum(value) { return { type: 'number', value: value }; }
@@ -33,9 +37,23 @@ assert.eq(
 
 assert.throws(function() { ason.parse('') });
 
-// A sketch for what's coming
+// TODO more tests for simple values
 assert.eq(ason.parse('"string\n"'), "string\n");
 assert.eq(ason.parse('123'), 123);
+
+test('arrays');
+assert.eq(ason.parse('[]'), []);
+assert.eq(ason.parse('[1]'), [1]);
+assert.eq(ason.parse('[1,]'), [1,]);
+assert.throws(function() { ason.parse('[1,,]'); });
+assert.eq(ason.parse('[[]]'), [[]]);
+assert.eq(ason.parse('[[[]], 4]'), [[[]], 4]);
+assert.eq(ason.parse('[[[]], [1, [2]], [3, ], 4,]'), [[[]], [1, [2]], [3], 4]);
+assert.throws(function() { ason.parse('[,]'); });
+assert.eq(ason.parse('[ 1, 2, 3 ]'), [1, 2, 3]);
+assert.eq(ason.parse('[ 1, [ 2, 3, ] ]'), [1, [2, 3]]);
+
+test('objects');
 assert.eq(ason.parse('{ xxx: 1 }'), { x: 1 });
 
 assert.eq(ason.parse('1, 2, 3'), [1, 2, 3]);

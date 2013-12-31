@@ -1,5 +1,9 @@
 var log = require('basic-log');
 
+var eofToken = {
+	type: 'eof'
+};
+
 function tokenize(s) {
 	log('tokenize "' + s + '"');
 	var i = 0;
@@ -33,6 +37,7 @@ function tokenize(s) {
 	}
 
 	while (true) {
+//		log("tokens now:", tokens);
 		var c = char();
 		log("read char", c);
 
@@ -93,7 +98,7 @@ function tokenize(s) {
 		}
 
 		// looks like a delimiter?
-		if (c.match(/[:{}\[\]]/)) {
+		if (c.match(/[,:{}\[\]]/)) {
 			tokens.push({ type: 'delim', delim: c });
 			continue;
 		}
@@ -114,30 +119,117 @@ function parse(s) {
 		throw new Error(msg);
 	}
 
+	// Eat token and return it
 	function token() {
-		return tokens[i++];
+		return tokens[i++] || eofToken;
 	}
 
+	// Pretend we didn't eat that token
+	function putBack() {
+		i--;
+	}
+
+	// What would be the next token?
 	function peek() {
-		return tokens[i];
+		return tokens[i] || eofToken;
 	}
 
 	var result = undefined;
 
+	// Parse one of
+	// 123, // number
+	// id, // identifier
+	// 'abc' // string
+	// { ... } // object
+	// [ ... ] // array
+	// null // etc
 	function parseExplicit() {
+		var tok = token();
+
+		if (tok.type === 'string') {
+			return tok.value;
+		}
+		
+		if (tok.type === 'number') {
+			return tok.value;
+		}
+
+		// TODO null, NaN etc.
+		if (tok.delim === '[') {
+			log("parse array");
+			var result = [];
+			while (true) {
+				var next = peek();
+				if (next.delim === ']') {
+					token();
+					return result;
+				} 
+				var value = parseExplicit();
+				log("array value returned", value);
+				if (typeof value === 'undefined') {
+					error('error while parsing array');
+				}
+				result.push(value);
+				// eat the next comma, optionally
+				if (peek().delim === ',') {
+					token();
+				}
+			}
+		}
+
+		if (tok.delim === '{') {
+			log("parse object");
+			var result = {};
+			while (true) {
+				var next = peek;
+				// TODO replace this and similar with
+				// consumeIfNextIs() or something
+				if (next.delim === '}') {
+					token();
+					return result;
+				}
+
+				var first = token();
+				if (first.type !== 'id' || first.type !== 'string') {
+					error('syntax error while parsing object');
+				}
+
+				
+			}
+		}
+
+		return;
 	}
 
 	function parseAny() {
-		var result = undefined;
+		var result;
+		var currentObject;
+		var currentArray;
 
 		while (true) {
 			var tok = token();
+			if (tok.delim === '[' || tok.delim === '{') {
+				putBack();
+				return parseExplicit();
+			}
 			var next = peek();
 
 			log("got token", tok, "next", next);
 
-			if (!tok) {
+			if (tok.type == 'eof') {
+				// TODO
+				// if currentArray != null
+				//   push currentObject into it
+				//   return it
+				// if currentObject != null
+				//   return it maybe?
 				return result;
+			}
+
+			// part of an object?
+			if ((tok.type === 'string' || tok.type === 'id')
+				&& next.delim == ':') {
+				log("Parsing an object!");
 			}
 
 			if (tok.type === 'string') {
@@ -149,7 +241,7 @@ function parse(s) {
 				result = tok.value;
 				// TODO what next? ','?
 			}
-			
+
 			// TODO peek and stuff to figure out what's coming
 			// parseAny() is this
 			// '[' -> parseList() 
