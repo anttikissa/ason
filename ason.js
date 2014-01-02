@@ -227,52 +227,44 @@ function parse(s) {
 		var currentObject;
 		var currentArray;
 
+		function getCurrentArray() {
+			return currentArray || (currentArray = []);
+		}
+
+		function getCurrentObject() {
+			return currentObject || (currentObject = {});
+		}
+
 		while (true) {
-			var tok = token();
-			if (tok.delim === '[' || tok.delim === '{') {
-				putBack();
-				return parseExplicit();
-			}
+			var explicit = parseExplicit();
+			log("parseAny tried explicit, gave", explicit);
+
 			var next = peek();
+			if (next.type === 'eof') {
+				log('eof');
+				// TODO handle currentObject, currentArray
+				if (currentArray) {
+					currentArray.push(explicit);
+					return currentArray;
+				}
 
-			log("got token", tok, "next", next);
+				return explicit;
+			}
 
-			if (tok.type == 'eof') {
-				// TODO
-				// if currentArray != null
-				//   push currentObject into it
-				//   return it
-				// if currentObject != null
-				//   return it maybe?
-				return result;
+			if (next.delim === ',') {
+				getCurrentArray().push(explicit);
 			}
 
 			// part of an object?
-			if ((tok.type === 'string' || tok.type === 'id')
-				&& next.delim == ':') {
-				log("Parsing an object!");
-			}
-
-			if (tok.type === 'string') {
-				result = tok.value;
-				// TODO what next? ':' or ','?
-			}
-
-			if (tok.type === 'number') {
-				result = tok.value;
-				// TODO what next? ','?
-			}
-
-			// TODO peek and stuff to figure out what's coming
-			// parseAny() is this
-			// '[' -> parseList() 
-			// '{' -> parseObject()
-			// id ':' parseSomething() and then what?
-			// maintain a stack of parsed things.
+//			if ((tok.type === 'string' || tok.type === 'id')
+//				&& next.delim == ':') {
+//				log("Parsing an object!");
+//			}
 		}
 	}
 
 	result = parseAny();
+	log('parseAny gave', result);
 
 	if (typeof result === 'undefined') {
 		error('unexpected input');

@@ -53,6 +53,8 @@ assert.throws(function() { ason.parse('[,]'); });
 assert.eq(ason.parse('[ 1, 2, 3 ]'), [1, 2, 3]);
 assert.eq(ason.parse('[ 1, [ 2, 3, ] ]'), [1, [2, 3]]);
 
+assert.throws(function() { ason.parse('[1, '); });
+
 test('objects');
 assert.eq(ason.parse('{ xxx: 1 }'), { xxx: 1 });
 assert.eq(ason.parse("{ 'yyy': 2 }"), { yyy: 2 });
