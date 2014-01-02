@@ -39,7 +39,7 @@ function tokenize(s) {
 	while (true) {
 //		log("tokens now:", tokens);
 		var c = char();
-		log("read char", c);
+//		log("read char", c);
 
 		if (!c) {
 			break;
@@ -92,7 +92,7 @@ function tokenize(s) {
 
 			putBack();
 
-//			log("pushing id", chars);
+			log("pushing id", chars);
 			tokens.push({ type: 'id', value: chars });
 			continue;
 		}
@@ -155,6 +155,7 @@ function parse(s) {
 		}
 
 		// TODO null, NaN etc.
+		
 		if (tok.delim === '[') {
 			log("parse array");
 			var result = [];
@@ -181,7 +182,7 @@ function parse(s) {
 			log("parse object");
 			var result = {};
 			while (true) {
-				var next = peek;
+				var next = peek();
 				// TODO replace this and similar with
 				// consumeIfNextIs() or something
 				if (next.delim === '}') {
@@ -190,10 +191,30 @@ function parse(s) {
 				}
 
 				var first = token();
-				if (first.type !== 'id' || first.type !== 'string') {
-					error('syntax error while parsing object');
+				if (first.type !== 'id' && first.type !== 'string') {
+					log('token is', first);
+					error('expecting id or string while parsing object');
 				}
 
+				// TODO what if first is NaN, Infinity, undefined, null or
+				// something hideous?
+
+				var second = token();
+				if (second.delim !== ':') {
+					error('expecting ":" while parsing object');
+				}
+
+				var third = parseExplicit();
+				if (typeof third === 'undefined') {
+					error('error while parsing object');
+				}
+
+				result[first.value] = third;
+
+				// eat the next comma, optionally
+				if (peek().delim === ',') {
+					token();
+				}
 				
 			}
 		}
