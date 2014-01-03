@@ -4,8 +4,11 @@ var eofToken = {
 	type: 'eof'
 };
 
-function tokenize(s) {
-	log('tokenize "' + s + '"');
+// for debugging
+function s(o) { return JSON.stringify(o); };
+
+function tokenize(str) {
+	log('=== TOKENIZE "' + str + '"');
 	var i = 0;
 	var tokens = [];
 
@@ -14,7 +17,7 @@ function tokenize(s) {
 	}
 
 	function char() {
-		return s[i++];
+		return str[i++];
 	}
 
 	function putBack() {
@@ -92,7 +95,7 @@ function tokenize(s) {
 
 			putBack();
 
-			log("pushing id", chars);
+//			log("pushing id", chars);
 			tokens.push({ type: 'id', value: chars });
 			continue;
 		}
@@ -110,8 +113,8 @@ function tokenize(s) {
 	return tokens;
 }
 
-function parse(s) {
-	var tokens = tokenize(s);
+function parse(str) {
+	var tokens = tokenize(str);
 
 	var i = 0;
 
@@ -139,7 +142,7 @@ function parse(s) {
 	// Parse one of
 	// 123, // number
 	// id, // identifier
-	// 'abc' // string
+	// 'abc' // string (if not part of name-pair value)
 	// { ... } // object
 	// [ ... ] // array
 	// null // etc
@@ -147,7 +150,11 @@ function parse(s) {
 		var tok = token();
 
 		if (tok.type === 'string') {
-			return tok.value;
+			// Don't take a string if it's part of
+			// <string> ':' <value>
+			if (peek().delim !== ':') {
+				return tok.value;
+			}
 		}
 		
 		if (tok.type === 'number') {
@@ -219,7 +226,8 @@ function parse(s) {
 			}
 		}
 
-		return;
+		// return implicit undefined, signaling "can't parse an explicit value"
+		putBack();
 	}
 
 	function parseAny() {
@@ -236,30 +244,124 @@ function parse(s) {
 		}
 
 		while (true) {
-			var explicit = parseExplicit();
-			log("parseAny tried explicit, gave", explicit);
+			log("LOOP, current token", peek());
+			log("currentArray", s(currentArray));
+			log("currentObject", s(currentObject));
 
 			var next = peek();
 			if (next.type === 'eof') {
-				log('eof');
-				// TODO handle currentObject, currentArray
-				if (currentArray) {
-					currentArray.push(explicit);
-					return currentArray;
+				error('TODO got eof at the beginning, dunno what now!');
+			}
+
+			// Attempt to parse explicit value.
+			var explicit = parseExplicit();
+
+			// Did we get an explicit value?
+			if (typeof explicit !== 'undefined') {
+				log('got explicit', JSON.stringify(explicit));
+
+				next = peek();
+
+				// The whole form consisted of a single explicit object
+				if (!currentArray && !currentObject && next.type === 'eof') {
+					return explicit;
 				}
 
-				return explicit;
+				// If the previous thing was an object, make it an object
+				// and push it first.
+				if (currentObject) {
+					getCurrentArray().push(currentObject);
+					currentObject = null;
+				}
+				getCurrentArray().push(explicit);
+
+				next = peek();
+
+				// Eat following comma if there is one.
+				if (next.delim === ',') {
+					token();
+					next = peek();
+				}
+
+				// If at end, deal with it.
+				if (next.type === 'eof') {
+					log('dealing with eof');
+					// Did we have an array of objects?
+					if (currentArray) {
+						return currentArray;
+					}
+
+					// No, just one explicit object
+					return explicit;
+				}
+				
+				// Otherwise, continue parsing.
+				continue;
 			}
 
-			if (next.delim === ',') {
-				getCurrentArray().push(explicit);
+			// Parsing an explicit value failed; the other
+			// possibility is a name-value pair.
+			
+			next = peek();
+
+			if (next.type === 'string' || next.type === 'id') {
+				// Our plan is to inject this thing into the current object.
+				var obj = getCurrentObject();
+
+				// TODO this code is copy & paste from parseExplicit()
+				var first = token();
+				if (first.type !== 'id' && first.type !== 'string') {
+					log('token is', first);
+					error('expecting id or string while parsing object');
+				}
+
+				// TODO what if first is NaN, Infinity, undefined, null or
+				// something hideous?
+
+				var second = token();
+				if (second.delim !== ':') {
+					error('expecting ":" while parsing object');
+				}
+
+				var third = parseExplicit();
+				if (typeof third === 'undefined') {
+					error('error while parsing object');
+				}
+
+				obj[first.value] = third;
+
+				next = peek();
+
+				// Eat the next comma, optionally
+				if (peek().delim === ',') {
+					token();
+					next = peek();
+				}
+
+				// If at end, deal with it.
+				if (next.type === 'eof') {
+					log('dealing with eof after object');
+					if (currentArray) {
+						currentArray.push(currentObject)
+						return currentArray;
+					} else {
+						return currentObject;
+					}
+				}
+
+				// Otherwise, move on
+				continue;
 			}
+
+			// Saw nothing good.
+			error('syntax error');
 
 			// part of an object?
 //			if ((tok.type === 'string' || tok.type === 'id')
 //				&& next.delim == ':') {
 //				log("Parsing an object!");
 //			}
+
 		}
 	}
 

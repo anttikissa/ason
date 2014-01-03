@@ -71,14 +71,16 @@ assert.eq(ason.parse('{ a: ["b", { c: { d: 5 } }, ], e: "f" }'), { a: ['b', { c:
 test('plain-form');
 
 assert.eq(ason.parse('1, 2, 3'), [1, 2, 3]);
+assert.eq(ason.parse('123,'), [123]);
 assert.eq(ason.parse('1, 2, foo: "bar"'), [1, 2, { foo: 'bar' }]);
-assert.eq(ason.parse('1, 2, foo: "bar"', 'last'), [1, 2, { foo: 'bar' }, 'last']);
+assert.eq(ason.parse('1, 2, foo: "bar", "last"'), [1, 2, { foo: 'bar' }, 'last']);
 assert.eq(ason.parse('foo: "bar"'), { foo: 'bar' });
+assert.eq(ason.parse('foo: "bar", 3'), [{ foo: 'bar' }, 3]);
 assert.eq(ason.parse('[1, 2], 3'), [[1, 2], 3]);
 assert.eq(ason.parse('a: 1, 2, b: 3'), [{ a: 1 }, 2, { b: 3 }]);
 
 // Probably should be an error
-assert.eq(ason.parse('1, person: name: "Name", age: 123, "then-what?"'), '???');
+assert.throws(function() { ason.parse('1, person: name: "Name", age: 123, "then-what?"'); });
 
 // Stringifying
 
