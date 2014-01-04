@@ -165,6 +165,12 @@ Would the whole thing work without any commas at all?
 Test with all example things.
 
 
+## Defined serialization order
+
+Should ason.stringify() define the order in which objects are serialized, so
+that it could be used for equality comparisons? Or just maybe have an option
+like 'sort: true'?
+
 ## Binary blobs?
 
 ## Comments
