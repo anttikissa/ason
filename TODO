@@ -12,7 +12,51 @@ is any good or not)
 
 - should have eat(something) and maybeEat(something), perhaps named 'expect'
 
+- travis CI?
+
 - grunt build that removes logs
 
-- travis CI?
+- implement comments
+
+- implement good error reporting
+
+- check that every article on the net googled with 'a better json' agrees with
+  me (nobody has realized the RPC factor yet?)
+  - http://pmuellr.blogspot.fi/2008/08/better-than-json.html
+  - http://bolinfest.com/essays/json.html
+
+- study JSON implementations
+  - https://github.com/douglascrockford/JSON-js/blob/master/json2.js
+  - http://json.org/
+
+- stringify needs at least 'compact' (no whitespace at all), 'short' (no
+  newlines; for small objects), and 'long' (multiline, human-friendly
+  representation of a bigger object)
+
+- and perhaps 'auto' (which should be the default), which picks 'short' or
+  'long' depending on some heuristic (as in, if the representation would be > 80
+  characters, use 'long', otherwise use 'short')
+ 
+- in a pinch, 'short' could be 'long' with newlines and following whitespace
+  removed
+
+- perhaps write an extremely human-readable version of stringify:
+
+Stringify([[.7071, -.7071], [.7071, .7071]], 'readable') should return
+
+[[ 0.7071, -0.7071 ]
+ [ 0.7071,  0.7071 ]]
+
+Similarly, stringify("[['somewhat long string', 1.234567, -1234.0123], 
+{ a: 'bcedfg' }, -123123.91, 3.0]") should return
+
+  [['somewhat long string',       1.234567, -1234.0123], 
+    a: 'bcedfg',            -123123.91,         3.0   ]]
+
+If stuff overflows, then deal with it somehow.  This is bound to get messy though.
+ 
+Or it actually clear that we want to align the numbers that way, maybe not?
+
+- support Functions (whenever possible; might not be easy to stringify as
+  Function is a wonky place in the JavaScript spec)
 
