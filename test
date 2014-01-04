@@ -91,6 +91,8 @@ assert.eq(ason.parse('foo: "bar", 3'), [{ foo: 'bar' }, 3]);
 assert.eq(ason.parse('foo: "bar" 3'), [{ foo: 'bar' }, 3]);
 assert.eq(ason.parse('[1, 2], 3'), [[1, 2], 3]);
 assert.eq(ason.parse('[1 2] 3'), [[1, 2], 3]);
+assert.eq(ason.parse('[1 2] [3 4]'), [[1, 2], [3, 4]]);
+assert.eq(ason.parse('[] []'), [[], []]);
 assert.eq(ason.parse('a: 1, 2, b: 3'), [{ a: 1 }, 2, { b: 3 }]);
 assert.eq(ason.parse('a: 1 2 b: 3'), [{ a: 1 }, 2, { b: 3 }]);
 
