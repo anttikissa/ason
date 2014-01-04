@@ -3,9 +3,10 @@
 
 var assert = require('basic-assert');
 var ason = require('./ason');
+var log = require('basic-log');
 
 function test(what) {
-	console.log("Testing", what);
+	log.i("Testing", what);
 }
 
 // Tokenizing
@@ -79,7 +80,7 @@ test('plain-form');
 assert.eq(ason.parse('1, 2, 3'), [1, 2, 3]);
 assert.eq(ason.parse('1 2 3'), [1, 2, 3]);
 assert.eq(ason.parse('123,'), [123]);
-// TODO this is the only place where a comma has a meaning!
+// This is the only place where the comma has a meaning!
 //assert.eq(ason.parse('123'), [123]);
 assert.eq(ason.parse('1, 2, foo: "bar"'), [1, 2, { foo: 'bar' }]);
 assert.eq(ason.parse('1 2 foo: "bar"'), [1, 2, { foo: 'bar' }]);
@@ -93,10 +94,10 @@ assert.eq(ason.parse('[1 2] 3'), [[1, 2], 3]);
 assert.eq(ason.parse('a: 1, 2, b: 3'), [{ a: 1 }, 2, { b: 3 }]);
 assert.eq(ason.parse('a: 1 2 b: 3'), [{ a: 1 }, 2, { b: 3 }]);
 
-// Probably should be an error
-assert.throws(function() { ason.parse('1, person: name: "Name", age: 123, "then-what?"'); });
+assert.throws(function() {
+	ason.parse('1, person: name: "Name", age: 123, "then-what?"');
+}); 
 
-// Stringifying
-
+test('stringifying');
 assert.eq(ason.stringify({}), "");
 

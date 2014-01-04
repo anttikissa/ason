@@ -1,5 +1,7 @@
 var log = require('basic-log');
 
+log.setLevel('info');
+
 var eofToken = {
 	type: 'eof'
 };
@@ -8,7 +10,7 @@ var eofToken = {
 function s(o) { return JSON.stringify(o); };
 
 function tokenize(str) {
-	log('=== TOKENIZE "' + str + '"');
+	log.d('TOKENIZE("' + str + '")');
 	var i = 0;
 	var tokens = [];
 
@@ -40,9 +42,9 @@ function tokenize(str) {
 	}
 
 	while (true) {
-//		log("tokens now:", tokens);
+//		log.d("tokens now:", tokens);
 		var c = char();
-//		log("read char", c);
+//		log.d("read char", c);
 
 		if (!c) {
 			break;
@@ -79,7 +81,7 @@ function tokenize(str) {
 				error('invalid number "' + chars + '"');
 			}
 
-//			log("pushing number", number);
+			log.d("token number", number);
 			tokens.push({ type: 'number', value: number });
 			
 			continue;
@@ -95,7 +97,7 @@ function tokenize(str) {
 
 			putBack();
 
-//			log("pushing id", chars);
+			log.d("token id", chars);
 			tokens.push({ type: 'id', value: chars });
 			continue;
 		}
@@ -164,7 +166,7 @@ function parse(str) {
 		// TODO null, NaN etc.
 		
 		if (tok.delim === '[') {
-			log("parse array");
+			log.d("parse array");
 			var result = [];
 			while (true) {
 				var next = peek();
@@ -173,7 +175,7 @@ function parse(str) {
 					return result;
 				} 
 				var value = parseExplicit();
-				log("array value returned", value);
+				log.d("array value returned", s(value));
 				if (typeof value === 'undefined') {
 					error('error while parsing array');
 				}
@@ -186,7 +188,7 @@ function parse(str) {
 		}
 
 		if (tok.delim === '{') {
-			log("parse object");
+			log.d("parse object");
 			var result = {};
 			while (true) {
 				var next = peek();
@@ -199,7 +201,7 @@ function parse(str) {
 
 				var first = token();
 				if (first.type !== 'id' && first.type !== 'string') {
-					log('token is', first);
+					log.d('token is', s(first));
 					error('expecting id or string while parsing object');
 				}
 
@@ -244,9 +246,9 @@ function parse(str) {
 		}
 
 		while (true) {
-			log("LOOP, current token", peek());
-			log("currentArray", s(currentArray));
-			log("currentObject", s(currentObject));
+			log.d("parse loop, current token", peek());
+//			log.d("currentArray", s(currentArray));
+//			log.d("currentObject", s(currentObject));
 
 			var next = peek();
 			if (next.type === 'eof') {
@@ -258,7 +260,7 @@ function parse(str) {
 
 			// Did we get an explicit value?
 			if (typeof explicit !== 'undefined') {
-				log('got explicit', JSON.stringify(explicit));
+				log.d('got explicit', JSON.stringify(explicit));
 
 				next = peek();
 
@@ -285,7 +287,7 @@ function parse(str) {
 
 				// If at end, deal with it.
 				if (next.type === 'eof') {
-					log('dealing with eof');
+					log.d('dealing with eof');
 					// Did we have an array of objects?
 					if (currentArray) {
 						return currentArray;
@@ -311,7 +313,7 @@ function parse(str) {
 				// TODO this code is copy & paste from parseExplicit()
 				var first = token();
 				if (first.type !== 'id' && first.type !== 'string') {
-					log('token is', first);
+					log.d('token is', first);
 					error('expecting id or string while parsing object');
 				}
 
@@ -340,7 +342,7 @@ function parse(str) {
 
 				// If at end, deal with it.
 				if (next.type === 'eof') {
-					log('dealing with eof after object');
+					log.d('dealing with eof after object');
 					if (currentArray) {
 						currentArray.push(currentObject)
 						return currentArray;
@@ -355,18 +357,11 @@ function parse(str) {
 
 			// Saw nothing good.
 			error('syntax error');
-
-			// part of an object?
-//			if ((tok.type === 'string' || tok.type === 'id')
-//				&& next.delim == ':') {
-//				log("Parsing an object!");
-//			}
-
 		}
 	}
 
 	result = parseAny();
-	log('parseAny gave', result);
+	log.d('parseAny gave', result);
 
 	if (typeof result === 'undefined') {
 		error('unexpected input');
