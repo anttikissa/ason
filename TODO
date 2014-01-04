@@ -1,0 +1,18 @@
+
+- change all ids to strings then tokenizing
+later, when error messages are being printed, we know which character the token
+came from and can retokenize it from there as printable (not sure if this idea
+is any good or not)
+
+- should combine eof checks?
+
+- should remove repeating code
+
+- should consolidate next = peek(), somewhere
+
+- should have eat(something) and maybeEat(something), perhaps named 'expect'
+
+- grunt build that removes logs
+
+- travis CI?
+
