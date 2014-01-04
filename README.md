@@ -1,13 +1,15 @@
 # ASON 
 
-two-line general description
-...
+ASON is a JSON replacement that
+
+- is designed to be read and written by humans (comments, trailing commas, both
+  kinds of string literals, etc.)
+- supports all JavaScript types and values, including Date, RegExp, `undefined`
+  and special floating point values such as `Infinity`.
 
 ## Why ASON?
 
 1. Designed for human consumption.
-
-ASON is designed to be read and written by humans.  
 
 You can use comments:
 
@@ -77,12 +79,12 @@ You can leave out `{}` and `[]` if the result is unambiguous:
 	// { name: { first: 'Bob', last: 'Smith' } }
 	name: first: 'Bob', last: 'Smith'
 
-
 2. More complete support for JavaScript types
 
 In addition to everything that JSON supports, you can serialize the values
-Infinity, -Infinity, NaN, and undefined.  Date types are also supported using
-two different formats:
+Infinity, -Infinity, NaN, and undefined.  
+
+Date types are also supported using two different formats:
 
 	Date('2013-12-26 11:52:11.494'), // for humans
 	Date(1388058731494) // for machines
@@ -97,13 +99,15 @@ All JSON documents are also valid ASON documents.
 ASON provides a JSON-compatible API.  Just replace `JSON.{parse,stringify}` with
 `ason.{parse,stringify}` and you're good to go.
 
-TODO the recommended way to call `ason.stringify` is:
+Simplified versions of ason.stringify:
 
-	ason.stringify(object, { type: 'compact' })
-	
-Note that unlike JSON, ASON is not a subset of JavaScript.
+ason.stringify(object); // human-readable output
+ason.stringify(object, 'compact'); // no whitespace
+ason.stringify(object, 2); // indent with two spaces
+ason.stringify(object, '\t'); // indent with '\t'
 
-3. 
+Note that unlike JSON, ASON is not a subset of JavaScript. Therefore it cannot
+be `eval`ed or accessed though a JSONP-like `script` technique.
 
 TODO revise from here onwards
 
