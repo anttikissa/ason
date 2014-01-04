@@ -95,6 +95,9 @@ assert.eq(ason.parse('[1 2] [3 4]'), [[1, 2], [3, 4]]);
 assert.eq(ason.parse('[] []'), [[], []]);
 assert.eq(ason.parse('a: 1, 2, b: 3'), [{ a: 1 }, 2, { b: 3 }]);
 assert.eq(ason.parse('a: 1 2 b: 3'), [{ a: 1 }, 2, { b: 3 }]);
+assert.eq(ason.parse('[x: 1]'), [{x: 1}]);
+assert.eq(ason.parse('[x: 1, 2, 3]'), [{x: 1}, 2, 3]);
+assert.eq(ason.parse('[1, x: { y: 2 }]'), [1, {x: { y: 2 }}]);
 
 assert.throws(function() {
 	ason.parse('1, person: name: "Name", age: 123, "then-what?"');
